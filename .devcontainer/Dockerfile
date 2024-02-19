@@ -1,4 +1,6 @@
-FROM tschaffter/rstudio
+# FROM tschaffter/rstudio
+ARG VARIANT="4.2"
+FROM ghcr.io/rocker-org/devcontainer/tidyverse:${VARIANT}
 # install library
 RUN apt-get update -y && apt-get install libgmp3-dev -y
 # install conda environment
