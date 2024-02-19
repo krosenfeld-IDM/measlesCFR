@@ -1,6 +1,34 @@
 # FROM tschaffter/rstudio
 ARG VARIANT="4.2"
 FROM ghcr.io/rocker-org/devcontainer/tidyverse:${VARIANT}
+# Use an official base image
+FROM ubuntu:latest
+
+# Set environment variables to reduce clutter in the container
+ENV LANG=C.UTF-8 LC_ALL=C.UTF-8 PATH=/opt/conda/bin:$PATH
+
+# Install necessary packages for Miniconda installation
+RUN apt-get update --fix-missing && \
+    apt-get install -y wget bzip2 ca-certificates curl git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+# Download and install Miniconda
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh && \
+    /bin/bash ~/miniconda.sh -b -p /opt/conda && \
+    rm ~/miniconda.sh && \
+    /opt/conda/bin/conda clean -tipsy && \
+    ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh && \
+    echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc && \
+    echo "conda activate base" >> ~/.bashrc
+
+# Optionally, you can add a step to create a new environment or install packages
+# For example, to create a new environment named myenv and install numpy:
+# RUN conda create -n myenv numpy
+
+# Set the container's main command to keep it running
+CMD [ "/bin/bash" ]
+
 # install library
 RUN apt-get update -y && apt-get install libgmp3-dev -y
 # install conda environment
